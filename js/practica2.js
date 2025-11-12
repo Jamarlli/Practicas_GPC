@@ -1,4 +1,4 @@
-
+// Practica 2 - Modelado jerárquico de un robot
 
 // Variables globales que van siempre
 var renderer, scene, camera;
@@ -37,7 +37,7 @@ function loadScene()
 	// SUELO
     let suelo = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshBasicMaterial({ color: 0xFFE59E, side: THREE.DoubleSide }));
     suelo.rotation.x = Math.PI / 2;
-    scene.add(suelo);
+    //scene.add(suelo);
 
     // ROBOT
     let robot = new THREE.Object3D();
@@ -140,13 +140,14 @@ function loadScene()
             2,8,19,//8
             2,-8,19,//7
 
-            2, -10, 0,//3
-            -2, -10, 0,//2
-            0, -8, 19,//6
+2, -10, 0,//3
+            0, -8, 19,//6
+            -2, -10, 0,//2
 
-            2, -10, 0,//3
-            0, -8, 19,//6
-            2, 8, 19,//7
+// --- TRIÁNGULO 8 CORREGIDO ---
+            2, -10, 0,//3
+            2, -8, 19,//7
+            0, -8, 19,//6
 
             0, 8, 19,//5
             0, -8, 19,//6
@@ -182,17 +183,19 @@ function loadScene()
             0,8,19,//8
             0,-8,19,//7
 
-            2, -10, 0,//3
-            -2, -10, 0,//2
-            -2, -8, 19,//6
-
-            2, -10, 0,//3
-            -2, -8, 19,//6
-            0, 8, 19,//7
+// --- TRIÁNGULO 7 CORREGIDO ---
+            2, -10, 0,//3
+            -2, -8, 19,//6
+            -2, -10, 0,//2
+            
+            // --- TRIÁNGULO 8 CORREGIDO ---
+            2, -10, 0,//3
+            0, -8, 19,//7
+            -2, -8, 19,//6
 
             -2, 8, 19,//5
-            0,8,19,//8
-            -2, -8, 19,//6
+            -2, -8, 19,//6
+            0, 8, 19,//8
 
 
             0,8,19,//8
@@ -239,3 +242,6 @@ function render()
 	update();
 	renderer.render( scene, camera );
 }
+
+
+//Practica 4 - Movimiento del robot
