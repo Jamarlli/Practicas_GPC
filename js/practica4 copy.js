@@ -6,7 +6,7 @@ var cameraControls;
 var clock = new THREE.Clock(); 
 
 // Variables de la escena y el robot
-var robot, brazo, antebrazo, mano, pinza, dedoIz, dedoDe;
+var robot, brazo, antebrazo, pinza, dedoIz, dedoDe;
 var allMaterials = []; 
 var keyboardState = {}; 
 
@@ -114,19 +114,20 @@ function loadScene()
         antebrazo.add(nervio);
     }
 
-    // MANO
-    mano = new THREE.Object3D();
-    mano.position.y = 80; // arriba de los nervios
-    
-    let cilindroMano = new THREE.Mesh(new THREE.CylinderGeometry(15, 15, 40, 32),
-                            createMaterial({ color: 0xe8e85b, wireframe: false })); // Amarillo
-    cilindroMano.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI/2);
-    mano.add(cilindroMano);
+    // MANO
+    let mano = new THREE.Mesh(new THREE.CylinderGeometry(15, 15, 40, 32),
+                            createMaterial({ color: 0xe8e85b, wireframe: false })); // Amarillo
+    mano.position.y = 80; // arriba de los nervios
+    mano.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI/2);
+    antebrazo.add(mano);
 
-    // PINZA (ahora usa la variable global)
-    pinza = new THREE.Object3D();
-    pinza.position.x = 20; // al final de la mano
-    pinza.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2);    for (let i=-1; i<=1; i+=2) {
+    // PINZA (ahora usa la variable global)
+    pinza= new THREE.Object3D();
+    pinza.position.y = 80; // arriba de los nervios
+    pinza.position.x = 20; // al final de la mano
+    pinza.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2);
+
+    for (let i=-1; i<=1; i+=2) {
         let dedo = new THREE.Object3D();
         dedo.position.x = i*10;
         
@@ -240,11 +241,11 @@ function loadScene()
         }
     }
 
-    mano.add(pinza);
-    
-    antebrazo.add(mano);
-    
-    brazo.add(antebrazo);    scene.add(robot);
+    antebrazo.add(pinza);
+    
+    brazo.add(antebrazo); 
+    
+    scene.add(robot);
 }
 
 function setupGui()
@@ -270,7 +271,7 @@ function setupGui()
     gui.add(controls, 'giroAntebrazoY', -180, 180).name('Giro Antebrazo Y'); // [cite: 15]
     gui.add(controls, 'giroAntebrazoZ', -90, 90).name('Giro Antebrazo Z'); // [cite: 15]
     gui.add(controls, 'giroPinza', -40, 220).name('Giro Pinza'); // [cite: 16]
-    gui.add(controls, 'separacionPinza', 2, 15).name('Separacion Pinza'); // [cite: 17]
+    gui.add(controls, 'separacionPinza', 0, 15).name('Separacion Pinza'); // [cite: 17]
     
     // Checkbox alambres
     gui.add(controls, 'alambres').name('Alambres').onChange(value => {
@@ -295,7 +296,7 @@ function startAnimation()
             giroAntebrazoY: -45,
             giroAntebrazoZ: 20,
             giroPinza: 45,
-            separacionPinza: 10
+            separacionPinza: 15
         }, 3000) // 3 segundos
         .easing(TWEEN.Easing.Quadratic.InOut);
 
@@ -317,24 +318,12 @@ function startAnimation()
             giroAntebrazoY: 0,
             giroAntebrazoZ: 0,
             giroPinza: 0,
-            separacionPinza: 15
-        }, 1500) // 1.5 segundos
-        .easing(TWEEN.Easing.Quadratic.Out);
-
-    let tweenD = new TWEEN.Tween(controls)
-        .to({
-            giroBase: 0,
-            giroBrazo: 0,
-            giroAntebrazoY: 0,
-            giroAntebrazoZ: 0,
-            giroPinza: 0,
             separacionPinza: 10
         }, 1500) // 1.5 segundos
         .easing(TWEEN.Easing.Quadratic.Out);
 
     tweenA.chain(tweenB);
     tweenB.chain(tweenC);
-    tweenC.chain(tweenD);
 
     tweenA.start();
 }
@@ -372,14 +361,15 @@ function update(delta)
     }
 
 
-    robot.rotation.y = THREE.MathUtils.degToRad(controls.giroBase);
-    brazo.rotation.z = THREE.MathUtils.degToRad(controls.giroBrazo);
-    antebrazo.rotation.y = THREE.MathUtils.degToRad(controls.giroAntebrazoY);
-    antebrazo.rotation.z = THREE.MathUtils.degToRad(controls.giroAntebrazoZ);
-    mano.rotation.z = THREE.MathUtils.degToRad(controls.giroPinza);
+    robot.rotation.y = THREE.MathUtils.degToRad(controls.giroBase);
+    brazo.rotation.z = THREE.MathUtils.degToRad(controls.giroBrazo);
+    antebrazo.rotation.y = THREE.MathUtils.degToRad(controls.giroAntebrazoY);
+    antebrazo.rotation.z = THREE.MathUtils.degToRad(controls.giroAntebrazoZ);
+    pinza.rotation.z = THREE.MathUtils.degToRad(controls.giroPinza);
     
-    dedoIz.position.x = +controls.separacionPinza;
-    dedoDe.position.x = -controls.separacionPinza;
+    dedoIz.position.x = -controls.separacionPinza;
+    dedoDe.position.x = controls.separacionPinza;
+
     if (gui) {
         if (typeof gui.controllersRecursive === 'function') {
             gui.controllersRecursive().forEach(c => { if (typeof c.updateDisplay === 'function') c.updateDisplay(); });
